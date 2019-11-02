@@ -3,9 +3,9 @@ Convert file system to text files and back
 
 Implemented:
 * filesystem -> json
- * directories
- * files
- * symlinks
+  * directories
+  * files
+  * symlinks
 
 Todo:
 * json -> filesystem
