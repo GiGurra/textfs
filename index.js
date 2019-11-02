@@ -37,7 +37,8 @@ async function main() {
         }
 
         const obj = JSON.parse(fs.readFileSync(cmdLine.input).toString());
-        ojb2Fs(obj)
+        obj.path = output;
+        ojb2Fs(obj, "", output)
     }
     else {
 
@@ -54,9 +55,10 @@ function fs2obj(path) {
 
     const stat = fs.lstatSync(path);
     const type = getTypeName(stat);
+    const pathParts = path.split('/');
     const result = {
         type: getTypeName(stat),
-        path: path,
+        path: pathParts[pathParts.length - 1],
         pathAbs: libPath.resolve(path)
     };
 
@@ -99,9 +101,12 @@ function fs2obj(path) {
     return result;
 }
 
-function ojb2Fs(obj, cwd = "", overridePath = null) {
+function ojb2Fs(obj, cwd = "") {
 
-    const path = overridePath ? overridePath : (cwd === "" ? obj.path : cwd + "/" + obj.path);
+    const path = cwd === "" ? obj.path : cwd + "/" + obj.path;
+
+    console.error(obj.path + " -> " + path);
+    console.error();
 
     switch(obj.type) {
         case "symlink":
@@ -110,6 +115,9 @@ function ojb2Fs(obj, cwd = "", overridePath = null) {
                 console.error(path + " (symlink)")
             }
 
+            const target = obj.target;
+            fs.symlinkSync(target, path);
+
             break;
         case "dir":
 
@@ -117,6 +125,7 @@ function ojb2Fs(obj, cwd = "", overridePath = null) {
                 console.error(path + " (dir)")
             }
 
+            fs.mkdirSync(path);
             obj.children.map(child => ojb2Fs(child, path));
 
             break;
@@ -127,63 +136,18 @@ function ojb2Fs(obj, cwd = "", overridePath = null) {
                 console.error(path + " (file, " + prettyBytes(size) + ")");
             }
 
-            const data = fs.readFileSync(path);
-            let isText = istextorbinary.isTextSync(path, data);
+            if (obj.encoding === "text") {
+                fs.writeFileSync(path, obj.contents);
+            }
+            else {
+                fs.writeFileSync(path, Buffer.from(obj.contents, 'base64'));
+            }
 
-            result.encoding = isText ? "text" : "binary";
-            result.contents = isText ? data.toString() : data.toString('base64');
-            result.size = size;
             break;
         default:
             console.error("Cannot recreate object " + JSON.stringify(obj) + " because it is of unsupported type " + obj.type);
             break;
     }
-
-    const stat = fs.lstatSync(path);
-    const type = getTypeName(stat);
-    const result = {
-        type: getTypeName(stat),
-        path: path,
-        pathAbs: libPath.resolve(path)
-    };
-
-    switch (type) {
-        case "symlink":
-
-            if (verbose) {
-                console.error(path + " (symlink)")
-            }
-
-            result.target = fs.readlinkSync(path);
-            break;
-        case "dir":
-
-            if (verbose) {
-                console.error(path + " (dir)")
-            }
-
-            result.children = fs.readdirSync(path).map(child => fs2obj(path + "/" + child));
-            break;
-        case "file":
-
-            const size = stat.size;
-            if (verbose) {
-                console.error(path + " (file, " + prettyBytes(size) + ")");
-            }
-
-            const data = fs.readFileSync(path);
-            let isText = istextorbinary.isTextSync(path, data);
-
-            result.encoding = isText ? "text" : "binary";
-            result.contents = isText ? data.toString() : data.toString('base64');
-            result.size = size;
-            break;
-        default:
-            console.error("WARN: Ignoring " + path + ", since it is of unsupported type: " + type);
-            break;
-    }
-
-    return result;
 }
 
 function getTypeName(stat) {
