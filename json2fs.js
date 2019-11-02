@@ -11,6 +11,8 @@ async function main() {
 
     let output = cmdLine.output;
 
+    console.log(cmdLine)
+
     if (output.endsWith("/")) {
         output = output.slice(0, output.length - 1)
     }
@@ -19,7 +21,8 @@ async function main() {
         throw new Error("Target file/folder '" + output + "' already exists!");
     }
 
-    const data = fs.readFileSync(process.stdin.fd);
+    const inputFile = cmdLine.input || process.stdin.fd;
+    const data = fs.readFileSync(inputFile);
     const obj = JSON.parse(data.toString());
 
     obj.path = output;
@@ -81,11 +84,19 @@ function parseCmdLine() {
             .example("$0 outputdir",
                 "Converts json from stdin to fs @ outputdir"
             )
+            .example("$0 -i inputfile outputdir",
+                "Converts json from inputfile to fs @ outputdir"
+            )
             .option('verbose', {
                 alias: 'v',
                 description: 'print more stuff',
                 type: 'boolean',
                 default: false,
+            })
+            .option('input', {
+                alias: 'i',
+                description: 'Get input from file instead of stdin',
+                type: 'string',
             })
             .help()
             .strict()
