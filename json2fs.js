@@ -99,4 +99,4 @@ function parseCmdLine() {
 }
 
 
-main()
+main();
