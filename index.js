@@ -1,27 +1,83 @@
 #!/usr/bin/env node
 
 const fs = require('fs');
+const libPath = require('path');
 const yargs = require('yargs/yargs');
+const istextorbinary = require('istextorbinary');
 
 async function main() {
     const cmdLine = parseCmdLine();
     console.error(cmdLine);
 
     const input = cmdLine.input;
+    if (cmdLine.output) {
+        throw new Error("Converting back not yet implemented!");
+    }
 
-    const inputIsFileSystem = fs.existsSync(input);
-
-    if (inputIsFileSystem) {
+    if (fs.existsSync(input)) {
         const stat = fs.lstatSync(input);
         if (stat.isDirectory()) {
             console.error("Treating " + input + " as file system input, and trying to output its json representation");
-        } else if (stat.isFile() && input.endsWith(".json")) {
-            throw new Error("Converting back from json not yet implemented!");
-        } else {
-            throw new Error("Unsupported input. Must be directory or .json file!");
+            const result = fs2JsObj(input);
+            console.error(result);
+        }
+        else {
+            throw new Error("Unsupported input. Must be directory!");
         }
     } else {
         throw new Error("Source file/folder '" + input + "' not found!");
+    }
+}
+
+function fs2JsObj(path) {
+
+    console.error("considering: " + path);
+
+    const stat = fs.lstatSync(path);
+    const type = getTypeName(stat);
+    const result = {
+        type: getTypeName(stat),
+        path: path,
+        pathAbs: libPath.resolve(path)
+    };
+
+    switch (type) {
+        case "symlink":
+            result.target = fs.readlinkSync(path);
+            break;
+        case "dir":
+            result.children = fs.readdirSync(path).map(child => fs2JsObj(path + "/" + child));
+            break;
+        case "file":
+            const isText = istextorbinary.isText(path);
+            result.encoding = isText ? "text" : "binary";
+            result.contents = isText ? fs.readFileSync(path).toString() : new Buffer(fs.readFileSync(path)).toString('base64');
+            break;
+        default:
+            console.error("WARN: Ignoring " + path + ", since it is of unsupported type: " + type);
+            break;
+    }
+
+    return result;
+}
+
+function getTypeName(stat) {
+    if (stat.isFile()) {
+        return "file"
+    } else if (stat.isDirectory()) {
+        return "dir"
+    } else if (stat.isBlockDevice()) {
+        return "blockdev"
+    } else if (stat.isCharacterDevice()) {
+        return "chardev"
+    } else if (stat.isSymbolicLink()) {
+        return "symlink"
+    } else if (stat.isFIFO()) {
+        return "fifo"
+    } else if (stat.isSocket()) {
+        return "socket"
+    } else {
+        return "ukn"
     }
 }
 

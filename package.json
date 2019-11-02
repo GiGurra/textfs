@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/gigurra/text-fs#readme",
   "dependencies": {
+    "istextorbinary": "^2.5.1",
     "yargs": "^14.2.0"
   }
 }
