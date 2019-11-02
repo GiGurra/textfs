@@ -7,7 +7,7 @@ const prettyBytes = require('pretty-bytes');
 const cmdLine = parseCmdLine();
 const verbose = cmdLine.verbose;
 
-async function main() {
+function main() {
 
     let output = cmdLine.output;
 
@@ -99,7 +99,4 @@ function parseCmdLine() {
 }
 
 
-main().catch(error => {
-    console.error(error);
-    process.exit(1);
-});
+main()
