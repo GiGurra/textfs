@@ -43,11 +43,12 @@ Convert json from stdin to fs
 Options:
   --version      Show version number                                   [boolean]
   --verbose, -v  print more stuff                     [boolean] [default: false]
+  --input, -i    Get input from file instead of stdin                   [string]
   --help         Show help                                             [boolean]
 
 Examples:
-  json2fs outputdir  Converts json from stdin to fs @ outputdir
-
+  json2fs outputdir               Converts json from stdin to fs @ outputdir
+  json2fs -i inputfile outputdir  Converts json from inputfile to fs @ outputdir
 ```
 
 
