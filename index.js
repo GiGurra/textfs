@@ -69,9 +69,11 @@ function fs2JsObj(path) {
                 console.error(path + " (file, size: " + prettyBytes(size) + ")");
             }
 
-            const isText = istextorbinary.isText(path) || istextorbinary.getEncoding(path) === 'utf8';
+            const data = fs.readFileSync(path);
+            let isText = istextorbinary.isTextSync(path, data);
+
             result.encoding = isText ? "text" : "binary";
-            result.contents = isText ? fs.readFileSync(path).toString() : fs.readFileSync(path).toString('base64');
+            result.contents = isText ? data.toString() : data.toString('base64');
             result.size = size;
             break;
         default:
