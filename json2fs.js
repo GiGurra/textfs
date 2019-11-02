@@ -19,7 +19,7 @@ async function main() {
         throw new Error("Target file/folder '" + output + "' already exists!");
     }
 
-    const data = fs.readFileSync(0, 'utf-8');
+    const data = fs.readFileSync(process.stdin.fd, 'utf-8');
     const obj = JSON.parse(data.toString());
 
     obj.path = output;
