@@ -66,7 +66,7 @@ function fs2JsObj(path) {
 
             const size = stat.size;
             if (verbose) {
-                console.error(path + " (file, size: " + prettyBytes(size) + ")");
+                console.error(path + " (file, " + prettyBytes(size) + ")");
             }
 
             const data = fs.readFileSync(path);
