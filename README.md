@@ -14,7 +14,7 @@ Todo:
 ## Use cases
 * store/backup file structures in password managers :)
 * send file structures as chat messages
-* prob more stuff
+* prob more stuff I can't think of right now
 
 ## How to use
 
