@@ -9,19 +9,10 @@ const verbose = cmdLine.verbose;
 
 async function main() {
 
-    let input = cmdLine.input;
     let output = cmdLine.output;
-
-    if (input.endsWith("/")) {
-        input = input.slice(0, input.length - 1)
-    }
 
     if (output.endsWith("/")) {
         output = output.slice(0, output.length - 1)
-    }
-
-    if (!fs.existsSync(input)) {
-        throw new Error("Source file/folder '" + input + "' not found!");
     }
 
     if (fs.existsSync(output)) {
@@ -32,7 +23,9 @@ async function main() {
         console.error("Treating " + input + " as json file, and trying to write back the original file structure!");
     }
 
-    const obj = JSON.parse(fs.readFileSync(cmdLine.input).toString());
+    const data = fs.readFileSync(0, 'utf-8');
+    const obj = JSON.parse(data.toString());
+    
     obj.path = output;
     ojb2Fs(obj, "", output)
 }
@@ -87,10 +80,10 @@ function ojb2Fs(obj, cwd = "") {
 }
 
 function parseCmdLine() {
-    return yargs(process.argv.slice(2)).usage('$0 <input> <output>', 'Convert json file to fs', (yargs) => {
+    return yargs(process.argv.slice(2)).usage('$0 <output>', 'Convert json from stdin to fs', (yargs) => {
         yargs
-            .example("$0 something.json outputdir",
-                "Converts something.json to fs @ outputdir"
+            .example("$0 outputdir",
+                "Converts json from stdin to fs @ outputdir"
             )
             .option('verbose', {
                 alias: 'v',
