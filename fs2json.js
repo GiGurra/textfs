@@ -32,8 +32,7 @@ function fs2obj(path) {
     const pathParts = path.split('/');
     const result = {
         type: getTypeName(stat),
-        path: pathParts[pathParts.length - 1],
-        pathAbs: libPath.resolve(path)
+        path: pathParts[pathParts.length - 1]
     };
 
     switch (type) {
