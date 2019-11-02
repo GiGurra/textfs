@@ -1,0 +1,25 @@
+{
+  "name": "text-fs",
+  "version": "1.0.0",
+  "description": "Convert files and folders to text and back",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "textfs": "./index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gigurra/text-fs.git"
+  },
+  "author": "Johan Kjölhede",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/gigurra/text-fs/issues"
+  },
+  "homepage": "https://github.com/gigurra/text-fs#readme",
+  "dependencies": {
+    "yargs": "^14.2.0"
+  }
+}
