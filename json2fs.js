@@ -19,13 +19,9 @@ async function main() {
         throw new Error("Target file/folder '" + output + "' already exists!");
     }
 
-    if (verbose) {
-        console.error("Treating " + input + " as json file, and trying to write back the original file structure!");
-    }
-
     const data = fs.readFileSync(0, 'utf-8');
     const obj = JSON.parse(data.toString());
-    
+
     obj.path = output;
     ojb2Fs(obj, "", output)
 }

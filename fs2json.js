@@ -21,10 +21,6 @@ async function main() {
         throw new Error("Source file/folder '" + input + "' not found!");
     }
 
-    if (verbose) {
-        console.error("Treating " + input + " as file system input, and trying to output its json representation");
-    }
-
     const result = fs2obj(input);
     console.log(JSON.stringify(result));
 }
