@@ -9,9 +9,13 @@ async function main() {
     const cmdLine = parseCmdLine();
     console.error(cmdLine);
 
-    const input = cmdLine.input;
+    let input = cmdLine.input;
     if (cmdLine.output) {
         throw new Error("Converting back not yet implemented!");
+    }
+
+    if (input.endsWith("/")) {
+        input = input.slice(0, input.length-1)
     }
 
     if (fs.existsSync(input)) {
@@ -19,7 +23,7 @@ async function main() {
         if (stat.isDirectory()) {
             console.error("Treating " + input + " as file system input, and trying to output its json representation");
             const result = fs2JsObj(input);
-            console.error(result);
+            console.log(JSON.stringify(result));
         }
         else {
             throw new Error("Unsupported input. Must be directory!");
@@ -30,8 +34,6 @@ async function main() {
 }
 
 function fs2JsObj(path) {
-
-    console.error("considering: " + path);
 
     const stat = fs.lstatSync(path);
     const type = getTypeName(stat);
@@ -49,9 +51,9 @@ function fs2JsObj(path) {
             result.children = fs.readdirSync(path).map(child => fs2JsObj(path + "/" + child));
             break;
         case "file":
-            const isText = istextorbinary.isText(path);
+            const isText = istextorbinary.isText(path) || istextorbinary.getEncoding(path) === 'utf8';
             result.encoding = isText ? "text" : "binary";
-            result.contents = isText ? fs.readFileSync(path).toString() : new Buffer(fs.readFileSync(path)).toString('base64');
+            result.contents = isText ? fs.readFileSync(path).toString() : fs.readFileSync(path).toString('base64');
             break;
         default:
             console.error("WARN: Ignoring " + path + ", since it is of unsupported type: " + type);
