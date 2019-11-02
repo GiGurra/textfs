@@ -11,8 +11,6 @@ async function main() {
 
     let output = cmdLine.output;
 
-    console.log(cmdLine)
-
     if (output.endsWith("/")) {
         output = output.slice(0, output.length - 1)
     }
@@ -32,9 +30,6 @@ async function main() {
 function ojb2Fs(obj, cwd = "") {
 
     const path = cwd === "" ? obj.path : cwd + "/" + obj.path;
-
-    console.error(obj.path + " -> " + path);
-    console.error();
 
     switch(obj.type) {
         case "symlink":
