@@ -1,6 +1,6 @@
 {
   "name": "textfs",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "Convert files and folders to text and back",
   "main": "index.js",
   "scripts": {
