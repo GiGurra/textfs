@@ -1,12 +1,12 @@
 {
   "name": "textfs",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Convert files and folders to text and back",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "json2fs": "./json2fs.js",
-    "fs2json": "./fs2json.js"
+    "json2fs": "node ./json2fs.js",
+    "fs2json": "node ./fs2json.js"
   },
   "bin": {
     "json2fs": "./json2fs.js",
