@@ -7,7 +7,7 @@ const prettyBytes = require('pretty-bytes');
 const cmdLine = parseCmdLine();
 const verbose = cmdLine.verbose;
 
-function main() {
+async function main() {
 
     let output = cmdLine.output;
 
@@ -19,12 +19,20 @@ function main() {
         throw new Error("Target file/folder '" + output + "' already exists!");
     }
 
-    const inputFile = cmdLine.input || process.stdin.fd;
-    const data = fs.readFileSync(inputFile);
-    const obj = JSON.parse(data.toString());
+    const data = cmdLine.input ? fs.readFileSync(cmdLine.input) : await readAllStdInToBuffer();
+    const obj = JSON.parse(data.toString('utf8'));
 
     obj.path = output;
     ojb2Fs(obj, "", output)
+}
+
+
+async function readAllStdInToBuffer() {
+    let buffer = Buffer.alloc(0);
+    for await (const chunk of process.stdin) {
+        buffer = Buffer.concat([buffer, chunk]);
+    }
+    return buffer;
 }
 
 function ojb2Fs(obj, cwd = "") {
@@ -98,5 +106,8 @@ function parseCmdLine() {
     }).argv;
 }
 
+main().catch(error => {
+    console.error(error);
+    process.exit(1)
+});
 
-main();
